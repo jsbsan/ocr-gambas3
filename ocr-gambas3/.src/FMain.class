@@ -1,0 +1,48 @@
+' Gambas class file
+
+' Julio Sanchez Berro, jsbsan, 2024/04
+
+Public ruta As String = User.home
+
+Public Sub ButtonPegar_Click()
+
+  Dim comandoTeseract As String
+  'leer portapapeles
+  'guardar imagen
+  If Clipboard.format = "application/x-qt-image" Then
+    'cargo imagen en el picturebox1
+    PictureBox1.Picture = Clipboard.Paste().picture
+    picturebox1.Picture.Save(ruta & "/imagen.png")
+    'pasar el tess
+    'leer fichero de texto y pegarlo en el textarea
+    TextArea1.Text = hacerOcr()
+  Else
+    Message.Info("No es una imagen lo que hay en el portapapeles")
+  Endif
+
+End
+
+Public Function hacerOCR() As String
+
+  Dim textoOcr As String
+  Dim Hproceso As Process
+  Dim comando As String = "tesseract " & ruta & "/imagen.png" & " \"" & ruta & "/text\" -l spa"
+
+  Print comando
+  hproceso = Shell comando For Read As "Proceso"
+
+  Do While hproceso.State = process.running
+    Wait 0.1
+  Loop
+
+  'termino de procesar la imagen
+  textoOcr = File.Load(ruta & "/text.txt")
+  Return textoOcr
+
+End
+
+Public Sub ButtonCopiar_Click()
+
+  Clipboard.Copy(TextArea1.text)
+
+End
