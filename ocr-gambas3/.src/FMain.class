@@ -9,7 +9,7 @@ Public Sub ButtonPegar_Click()
   Dim comandoTeseract As String
   'leer portapapeles
   'guardar imagen
-  If Clipboard.format = "application/x-qt-image" Then
+  If Clipboard.format = "application/x-qt-image" Or Clipboard.format = "image/png" Then
     'cargo imagen en el picturebox1
     PictureBox1.Picture = Clipboard.Paste().picture
     picturebox1.Picture.Save(ruta & "/imagen.png")
@@ -42,7 +42,23 @@ Public Function hacerOCR() As String
 End
 
 Public Sub ButtonCopiar_Click()
+  'jprocesar las lineas para quitar los enter finales del texto
 
-  Clipboard.Copy(TextArea1.text)
+  Dim a As Integer
+  Dim textosumado As String
+  Dim lineas As String[]
+
+  lineas = Split(textArea1.text, "\n")
+
+  For a = 1 To lineas.count - 1
+    If lineas[a - 1] = "" Then
+      textosumado &= "\n"
+    Else
+      textosumado &= Replace(lineas[a - 1], "\n", "") & " "
+    Endif
+
+  Next
+
+  clipboard.Copy(textosumado)
 
 End
